@@ -71,11 +71,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     confirmButtonText: "Si! Borrar el registro!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        Swal.fire({
-                            title: "Borrado!",
-                            text: "El registro ha sido eliminado para siempre >:) ",
-                            icon: "success"
-                        });
+                        
                         //invocamos la funcion que permite eliminar el documento, enviando el id
                         remove(btn.id)
                     }

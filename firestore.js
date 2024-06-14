@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-import { addDoc,collection,getFirestore,onSnapshot, deleteDoc, doc, getDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"
+import { addDoc,collection, where,query, getFirestore,onSnapshot, deleteDoc, doc, getDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -25,8 +25,32 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 //getFirestore es una funcion de firestorm que retorna la Base de datos para su uso
 const db = getFirestore(app)
+
+//funcion asincrona para verificar
+
+const validarRun = async (run, docId = null) => {
+  const collectionRef = collection(db,'Pedidos');
+  const consulta = query(collectionRef, where ('run', '==',run));
+  if (docId){
+    consulta = query(collectionRef, where ('run', '==',run));
+  }
+  const snapshot = await getDocs(consulta);
+  return snapshot.size ===0; //True si es único, False si es duplicado
+}
+
+
 //funcion para guardar datos
 export const save = async (e) => {
+const runUnico = await validarRun(e.run);
+  if (!runUnico){
+    Swal.fire({
+      title: "¡Ese RUT ya existe!",
+      text: "Por favor ingresa un nuevo RUT",
+      icon: "error"
+    });
+    return;
+  }
+
   try {
  
     await addDoc(collection(db, 'Pedidos'), e);
